@@ -1,0 +1,38 @@
+:root {
+    font-size: 12px;
+    font-family: sans-serif;
+
+    --cell-size: 10rem;
+    --cell-font-size: 7rem;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, var(--cell-size));
+    gap: 4px;
+    background-color: #808080;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    font-size: var(--cell-font-size);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    cursor: pointer;
+}
