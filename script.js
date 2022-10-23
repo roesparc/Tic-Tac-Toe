@@ -1,31 +1,46 @@
-const gameBoard = (() => {
-    let game = [];
-    return{game}
+const player = (() => {
+    const playerX = _createPlayer('X');
+    const playerO = _createPlayer('O');
+
+    function _createPlayer(mark) {
+        return {mark}
+    }
+    
+    return {playerX, playerO}
 })();
 
-const player = (mark) => {
-    return {mark}
-}
+const gameBoard = (() => {
+    let _board = [];
 
-const playerX = player('X');
+    function boardAdd(mark) {
+        _board.push(mark);
+    }
 
-const playerO = player('O');
+    function getMark(){
+        let _selectedPlayer;
+
+        if (_board.length % 2 === 0) {
+            _selectedPlayer = player.playerX;
+        } else {
+            _selectedPlayer = player.playerO;
+        }
+
+        return _selectedPlayer.mark;
+    }
+
+    return{boardAdd, getMark}
+})();
 
 const runGame = (() => {
     const _cells = document.querySelectorAll('.cell');
-    for (let i = 0; i < _cells.length; i++) {
-        const _cell = _cells.item([i])
-        _cell.addEventListener('click', () => {
-            let _player;
-            if (_cell.textContent) {return;}
-            if (!gameBoard.game.length
-                || gameBoard.game.slice(-1) == 'O') {
-                _player = playerX;
-            } else {
-                _player = playerO;
-            }
-            gameBoard.game.push(_player.mark);
-            _cell.textContent = _player.mark;
-        });
-    }
+    
+    _cells.forEach(cell => cell.addEventListener('click', () => {
+        if (cell.textContent) {return;}
+
+        const mark = gameBoard.getMark();
+
+        gameBoard.boardAdd(mark);
+        
+        cell.textContent = mark;
+    }));
 })();
