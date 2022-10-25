@@ -14,15 +14,30 @@
 body {
     height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
 }
 
+h1 {
+    margin-bottom: 3rem;
+}
+
+form {
+    display: none;
+}
+
+.announce {
+    display: none;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
 .board {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(3, var(--cell-size));
     gap: 4px;
     background-color: #808080;
+    width: max-content;
 }
 
 .cell {
