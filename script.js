@@ -41,6 +41,8 @@ const gameBoard = (() => {
     let _board = [];
     let _playerXGame = [];
     let _playerOGame = [];
+    let _playerXScore = [];
+    let _playerOScore = [];
     const _winningCombinations = [
         [0, 1, 2],
         [3, 4, 5],
@@ -52,10 +54,17 @@ const gameBoard = (() => {
         [2, 4, 6]
     ];
 
-    function play(cells, cell, announce) {
+    function play(
+        cells,
+        cell,
+        announce,
+        playerXScore,
+        playerOScore,
+        restart
+        ) {
         const mark = _getMark();
 
-        if (_checkWinner(announce)) {return;}
+        if (announce.textContent.slice(-1) === '!') {return;}
 
         if (cell.textContent) {return;}
 
@@ -68,6 +77,10 @@ const gameBoard = (() => {
         _checkTie(announce);
 
         _checkWinner(announce);
+
+        _updateScore(playerXScore, playerOScore);
+
+        _playAgain(announce, restart);
     }
 
     function _getMark(){
@@ -114,6 +127,7 @@ const gameBoard = (() => {
         for (let i = 0; i < _winningCombinations.length; i++) {
             if (_winningCombinations[i].every(c => _playerXGame.includes(c))) {
                 announce.textContent = `${player.playerXName()} wins!`;
+                _assignScore('playerX');
                 return true;
             }
         }
@@ -121,46 +135,125 @@ const gameBoard = (() => {
         for (let i = 0; i < _winningCombinations.length; i++) {
             if (_winningCombinations[i].every(c => _playerOGame.includes(c))) {
                 announce.textContent = `${player.playerOName()} wins!`;
+                _assignScore('playerO');
                 return true;
             }
         }
     }
 
-    // console.log()
+    function _assignScore(player) {
+        (player === 'playerX') ?
+        _playerXScore.push(1)
+        :
+        _playerOScore.push(1);
+    }
 
-    return {play}
+    function _updateScore(playerXScore, playerOScore) {
+        playerXScore.textContent = _playerXScore.length;
+        playerOScore.textContent = _playerOScore.length;
+    }
+
+    function restart() {
+        _board = [];
+        _playerXGame = [];
+        _playerOGame = [];
+    }
+
+    function _playAgain(announce, restart) {
+        if (announce.textContent.slice(-1) === '!') {
+            restart.textContent = 'Play Again';
+        }
+    }
+
+    function backMenu() {
+        _board = [];
+        _playerXGame = [];
+        _playerOGame = [];
+        _playerXScore = [];
+        _playerOScore = [];
+    }
+
+    return {play, restart, backMenu}
 })();
 
 const runGame = (() => {
     const _cells = [...document.querySelectorAll('.cell')];
-    const _board = document.querySelector('.board');
+    const _game = document.querySelector('.game');
     const _announce = document.querySelector('.announce');
     const _startGame = document.querySelector('.start-game');
     const _playersForm = document.querySelector('form');
     const _playerXName = document.querySelector('#player-x');
     const _playerOName = document.querySelector('#player-o');
+    const _playerXScoreContainer = document.querySelector('.player-x-score');
+    const _playerOScoreContainer = document.querySelector('.player-o-score');
+    const _restartBtn = document.querySelector('.restart-button');
+    const _menuBtn = document.querySelector('.menu-button');
+
+    const _playerXScoreName = document.createElement('div');
+    const _playerXScore = document.createElement('div');
+    const _playerOScoreName = document.createElement('div');
+    const _playerOScore = document.createElement('div');
+    
+    _playerXScoreContainer.appendChild(_playerXScoreName);
+    _playerXScoreContainer.appendChild(_playerXScore);
+    _playerOScoreContainer.appendChild(_playerOScoreName);
+    _playerOScoreContainer.appendChild(_playerOScore);
 
     _startGame.addEventListener('click', () => {
         _startGame.style.display = 'none';
-
         _playersForm.style.display = 'block';
     });
 
     _playersForm.addEventListener('submit', (e) => {
         _playersForm.style.display = 'none';
-
-        _board.style.display = 'grid';
-
-        _announce.style.display = 'block';
+        _game.style.display = 'flex';
+        _restartBtn.style.display = 'block';
+        _menuBtn.style.display = 'block';
 
         player.setName(_playerXName, _playerOName);
 
         _announce.textContent = `${player.playerXName()}'s Turn`;
+        _playerXScoreName.textContent = _playerXName.value;
+        _playerXScore.textContent = 0;
+        _playerOScoreName.textContent = _playerOName.value;
+        _playerOScore.textContent = 0;
 
         e.preventDefault();
     });
-    
+
     _cells.forEach(cell => cell.addEventListener('click', () => {
-        gameBoard.play(_cells, cell, _announce);
+        gameBoard.play(
+            _cells,
+            cell,
+            _announce,
+            _playerXScore,
+            _playerOScore,
+            _restartBtn
+            );
     }));
+
+    _restartBtn.addEventListener('click', () => {
+        gameBoard.restart();
+        _cells.map(c => c.textContent = '');
+        _announce.textContent = `${player.playerXName()}'s turn`;
+        _restartBtn.textContent = 'Restart';
+    });
+
+    _menuBtn.addEventListener('click', () => {
+        gameBoard.backMenu();
+
+        _game.style.display = 'none';
+        _restartBtn.style.display = 'none';
+        _menuBtn.style.display = 'none';
+        _startGame.style.display = 'block';
+
+        _playerXName.value = '';
+        _playerOName.value = '';
+        _playerXScore.textContent = 0;
+        _playerOScore.textContent = 0;
+        _restartBtn.textContent = 'Restart';
+        _announce.textContent = `${player.playerXName()}'s turn`;
+
+        _cells.map(c => c.textContent = '');
+    });
 })();
