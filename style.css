@@ -22,7 +22,19 @@ h1 {
     margin-bottom: 3rem;
 }
 
-form {
+.two-players-button {
+    display: none;
+}
+
+.player-bot-button {
+    display: none;
+}
+
+.form-bot {
+    display: none;
+}
+
+.form-two-players {
     display: none;
 }
 
