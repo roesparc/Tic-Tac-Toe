@@ -14,7 +14,22 @@
 
     <button class="start-game">Start Game</button>
 
-    <form>
+    <button class="two-players-button">Player VS Player</button>
+
+    <button class="player-bot-button">Player VS Bot</button>
+
+    <form class="form-bot">
+        <label for="single-player"></label>
+        <input
+        type="text"
+        id="single-player"
+        placeholder="Enter Name"
+        required />
+
+        <button class="submit-single">Submit</button>
+    </form>
+
+    <form class="form-two-players">
         <label for="player-x">Player "X"</label>
         <input
         type="text"
@@ -32,7 +47,7 @@
         <button class="submit-players">Submit</button>
     </form>
 
-    <button class="menu-button">Back to Main Menu</button>
+    <button class="menu-button">Return</button>
 
     <div class="game">
         <div class="player-x-score"></div>
