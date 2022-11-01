@@ -10,7 +10,7 @@ const player = (() => {
         if (playerOName === 'Bot') {
             _playerX = _createPlayer('X', playerXName.value);
 
-            _playerO = _createPlayer('O', 'Bot');    
+            _playerO = _createPlayer('O', 'Bot');
         } else {            
             _playerX = _createPlayer('X', playerXName.value);
 
@@ -68,35 +68,19 @@ const gameBoard = (() => {
         _playAgain(announce, restart);
 
         if (play === 'playBot') {
-            _botMove(cells, announce, playerXScore, playerOScore, restart);
+            if (announce.textContent.slice(-1) === '!') {return;}
+
+            botLogic._botMove(cells, announce, playerXScore, playerOScore, restart);
         }
     }
 
-    function _botMove(cells, announce, playerXScore, playerOScore, restart) {
-        const mark = player.getO().mark;
-        const cellMove = cells[_minimax(player.getO().mark).index];
-
-        _boardAdd(mark, cellMove);
-
-        _playerGameAdd(mark, cells, cellMove);
-
-        _announcePlayer(mark, announce);
-
-        _checkTie(announce);
-
-        _checkWinner(announce);
-
-        _updateScore(playerXScore, playerOScore);
-
-        _playAgain(announce, restart);
-    }
-
-    function _getMark(){
+    function _getMark() {
         let _playerMark;
 
         if (_board.length % 2 === 0) {
             _playerMark = player.getX().mark;
-        } else {
+        }
+        else {
             _playerMark = player.getO().mark;
         }
 
@@ -160,98 +144,162 @@ const gameBoard = (() => {
         playerOScore.textContent = _playerOScore.length;
     }
 
-    function _minimax(selectedPlayer) {
-        const freeSpots = _emptyCells();
-        
-        if (selectedPlayer == player.getX().mark) {
-            var playerGame = _playerXGame
-        } else {
-            var playerGame = _playerOGame
+    function _playAgain(announce, restart) {
+        if (announce.textContent.slice(-1) === '!') {
+            restart.textContent = 'Play Again';
+        }
+    }
+
+    const botLogic = (() => {
+        let _percentage = 0;
+
+        function _botMove(cells, announce, playerXScore, playerOScore, restart) {
+            const mark = player.getO().mark;
+            const cellMove = calculateMove(cells);
+    
+            _boardAdd(mark, cellMove);
+    
+            _playerGameAdd(mark, cells, cellMove);
+    
+            _announcePlayer(mark, announce);
+    
+            _checkTie(announce);
+    
+            _checkWinner(announce);
+    
+            _updateScore(playerXScore, playerOScore);
+    
+            _playAgain(announce, restart);
         }
 
-        if (_MiniMaxCheckWinner(_playerXGame)) {
-            return {score: -10}
-        } else if (_MiniMaxCheckWinner(_playerOGame)) {
-            return {score: 10}
-        }else if (freeSpots.length === 0) {
-            return {score: 0}
+        function setPercentage(value) {
+            _percentage = value;
         }
 
-        let moves = [];
+        function calculateMove(cells) {
+            let move;
+            const _rand = Math.random() * 100;
 
-        for (let i = 0; i < freeSpots.length; i++) {
-            let move = {};
-            move.index = freeSpots[i];
-            playerGame.push(freeSpots[i]);
-
-            if (selectedPlayer == player.getO().mark) {
-                const result = _minimax(player.getX().mark);
-                move.score = result.score;
-            } else {
-                const result = _minimax(player.getO().mark);
-                move.score = result.score;
-            }
-
-            playerGame.pop();
-
-            moves.push(move);
-        }
-
-        let bestMove;
-
-        if (selectedPlayer === player.getO().mark) {
-            let bestScore = -11;
-            for (let i = 0; i < moves.length; i++) {
-                if (moves[i].score > bestScore) {
-                    bestScore = moves[i].score;
-                    bestMove = i;
+            function _random() {
+                const cellMove = Math.floor(Math.random() * 9);
+    
+                if (cells[cellMove].textContent) {
+                    _random();
+                }
+                else {
+                    move = cellMove;
+                }
+            }    
+            
+            if (_rand < _percentage) {
+                if (_minimax(player.getO().mark).score == -10) {
+                    _random();
+                }
+                else {
+                    move = _minimax(player.getO().mark).index;
                 }
             }
-        } else {
-            let bestScore = 11;
-            for (let i = 0; i < moves.length; i++) {
-                if (moves[i].score < bestScore) {
-                    bestScore = moves[i].score;
-                    bestMove = i;
+            else {
+                _random();
+            }
+
+            return cells[move];
+        }
+
+        function _minimax(selectedPlayer) {
+            const freeSpots = _emptyCells();
+            
+            if (selectedPlayer == player.getX().mark) {
+                var playerGame = _playerXGame
+            }
+            else {
+                var playerGame = _playerOGame
+            }
+    
+            if (_MiniMaxCheckWinner(_playerXGame)) {
+                return {score: -10}
+            }
+            else if (_MiniMaxCheckWinner(_playerOGame)) {
+                return {score: 10}
+            }
+            else if (freeSpots.length === 0) {
+                return {score: 0}
+            }
+    
+            let moves = [];
+    
+            for (let i = 0; i < freeSpots.length; i++) {
+                let move = {};
+                move.index = freeSpots[i];
+                playerGame.push(freeSpots[i]);
+    
+                if (selectedPlayer == player.getO().mark) {
+                    const result = _minimax(player.getX().mark);
+                    move.score = result.score;
+                }
+                else {
+                    const result = _minimax(player.getO().mark);
+                    move.score = result.score;
+                }
+    
+                playerGame.pop();
+    
+                moves.push(move);
+            }
+    
+            let bestMove;
+    
+            if (selectedPlayer === player.getO().mark) {
+                let bestScore = -11;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score > bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = i;
+                    }
                 }
             }
-        }
-
-        return moves[bestMove];
-    }
-
-    function _emptyCells(){
-        let cellIndexes = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
-        for (let i = 0; i < cellIndexes.length; i++) {
-            if (_playerXGame.includes(cellIndexes[i]) ||
-                _playerOGame.includes(cellIndexes[i])) {
-                    cellIndexes.splice(i, 1);
-                    i -= 1;
+            else {
+                let bestScore = 11;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score < bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = i;
+                    }
+                }
             }
+    
+            return moves[bestMove];
         }
-
-        return cellIndexes;
-    }
-
-    function _MiniMaxCheckWinner(player) {
-        for (let i = 0; i < _winningCombinations.length; i++) {
-            if (_winningCombinations[i].every(c => player.includes(c))) {
-                return true
+    
+        function _emptyCells(){
+            let cellIndexes = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    
+            for (let i = 0; i < cellIndexes.length; i++) {
+                if (_playerXGame.includes(cellIndexes[i]) ||
+                    _playerOGame.includes(cellIndexes[i])) {
+                        cellIndexes.splice(i, 1);
+                        i -= 1;
+                }
             }
+    
+            return cellIndexes;
         }
-    }
+    
+        function _MiniMaxCheckWinner(player) {
+            for (let i = 0; i < _winningCombinations.length; i++) {
+                if (_winningCombinations[i].every(c => player.includes(c))) {
+                    return true
+                }
+            }
+        }    
+
+        return {_botMove, setPercentage}
+    })();
 
     function restart() {
         _board = [];
         _playerXGame = [];
         _playerOGame = [];
-    }
-
-    function _playAgain(announce, restart) {
-        if (announce.textContent.slice(-1) === '!') {
-            restart.textContent = 'Play Again';
-        }
     }
 
     function backMenu() {
@@ -262,7 +310,7 @@ const gameBoard = (() => {
         _playerOScore = [];
     }
 
-    return {play, restart, backMenu}
+    return {play, restart, backMenu, botLogic}
 })();
 
 const runGame = (() => {
@@ -282,6 +330,8 @@ const runGame = (() => {
     const _playerOScoreContainer = document.querySelector('.player-o-score');
     const _restartBtn = document.querySelector('.restart-button');
     const _menuBtn = document.querySelector('.menu-button');
+    const _selectDifficulty = document.querySelector('.set-difficulty');
+    const _difficulty = document.querySelector('#difficulty');
 
     const _playerXScoreName = document.createElement('div');
     const _playerXScore = document.createElement('div');
@@ -293,7 +343,7 @@ const runGame = (() => {
     _playerOScoreContainer.appendChild(_playerOScoreName);
     _playerOScoreContainer.appendChild(_playerOScore);
 
-    function formSubmit(e) {
+    function _formSubmit(e) {
         if (e.target == _botForm) {
             _botForm.style.display = 'none';
 
@@ -303,7 +353,8 @@ const runGame = (() => {
             _playerOScoreName.textContent = 'Bot';
             
             _board.classList.add('board-bot');    
-        } else {
+        }
+        else {
             _playersForm.style.display = 'none';
 
             player.setName(_playerXName, _playerOName);
@@ -325,6 +376,17 @@ const runGame = (() => {
         e.preventDefault();
     }
 
+    function _reset() {
+        gameBoard.restart();
+        _cells.map(c => c.textContent = '');
+        _restartBtn.textContent = 'Restart';
+
+        if (player.getX()) {
+            _announce.textContent = `${player.getX().name}'s turn`;
+        }
+        else {return;}
+    }
+
     _startGame.addEventListener('click', () => {
         _startGame.style.display = 'none';
         _twoPlayersBtn.style.display = 'block';
@@ -334,20 +396,39 @@ const runGame = (() => {
     _twoPlayersBtn.addEventListener('click', () => {
         _playersForm.style.display = 'block';
         _botForm.style.display = 'none';
+        _selectDifficulty.style.display = 'none';
     });
 
     _playerBotBtn.addEventListener('click', () => {
         _botForm.style.display = 'block';
+        _selectDifficulty.style.display = 'block';
         _playersForm.style.display = 'none';
     });
 
     _botForm.addEventListener('submit', (e) => {
-        formSubmit(e);
+        _formSubmit(e);
     });
 
     _playersForm.addEventListener('submit', (e) => {
-        formSubmit(e);
+        _formSubmit(e);
     });
+
+    _selectDifficulty.addEventListener('change', () => {
+        if (_difficulty.value === 'easy') {
+            gameBoard.botLogic.setPercentage(0);
+        }
+        else if (_difficulty.value === 'medium') {
+            gameBoard.botLogic.setPercentage(60);
+        }
+        else if (_difficulty.value === 'impossible') {
+            gameBoard.botLogic.setPercentage(100);
+        }
+
+        _reset();
+
+        _playerXScore.textContent = 0;
+        _playerOScore.textContent = 0;
+    })
 
     _cells.forEach(cell => cell.addEventListener('click', () => {
         if (_board.classList.value == 'board') {
@@ -359,7 +440,8 @@ const runGame = (() => {
                 _playerOScore,
                 _restartBtn
             );
-        } else {
+        }
+        else {
             gameBoard.play(
                 _cells,
                 cell,
@@ -372,12 +454,7 @@ const runGame = (() => {
         }
     }));
 
-    _restartBtn.addEventListener('click', () => {
-        gameBoard.restart();
-        _cells.map(c => c.textContent = '');
-        _announce.textContent = `${player.getX().name}'s turn`;
-        _restartBtn.textContent = 'Restart';
-    });
+    _restartBtn.addEventListener('click', _reset);
 
     _menuBtn.addEventListener('click', () => {
         gameBoard.backMenu();
@@ -385,11 +462,13 @@ const runGame = (() => {
         _game.style.display = 'none';
         _restartBtn.style.display = 'none';
         _menuBtn.style.display = 'none';
+        _selectDifficulty.style.display = 'none';
         _startGame.style.display = 'block';
 
         _playerXName.value = '';
         _playerOName.value = '';
         _playerSingleName.value = '';
+        _difficulty.value = 'easy';
         _playerXScore.textContent = 0;
         _playerOScore.textContent = 0;
         _restartBtn.textContent = 'Restart';
