@@ -38,6 +38,10 @@ h1 {
     display: none;
 }
 
+.set-difficulty {
+    display: none;
+}
+
 .game {
     font-size: 1.5rem;
     display: none;
