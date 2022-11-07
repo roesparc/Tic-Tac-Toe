@@ -2,7 +2,7 @@
 
 ## [Live Demo](https://roesparc.github.io/Tic-Tac-Toe/)
 
-<img alt="Dashboard Screen Capture" src="./img/game-preview.gif"/>
+<img alt="Tic Tac Toe demo GIF" src="./img/game-preview.gif"/>
 
 ### Vanilla JS Tic Tac Toe project
 
