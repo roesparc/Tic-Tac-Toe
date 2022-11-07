@@ -147,7 +147,9 @@ const gameBoard = (() => {
                     cells[index].classList.add('winner-x');
                 }
 
-                announce.classList.add('announce-win-x');
+                setTimeout(() => {
+                    announce.classList.add('announce-win-x');
+                }, 300);
 
                 return true;
             }
@@ -166,7 +168,9 @@ const gameBoard = (() => {
                     cells[index].classList.add('winner-o');
                 }
 
-                announce.classList.add('announce-win-o');
+                setTimeout(() => {
+                    announce.classList.add('announce-win-o');
+                }, 300);
 
                 return true;
             }
@@ -187,7 +191,8 @@ const gameBoard = (() => {
 
     function _playAgain(announce, restart) {
         if (announce.textContent.slice(-1) === '!') {
-            restart.textContent = 'Play Again';
+            restart.innerHTML =
+            'Play Again <img src="./svg/restart.svg" class="restart-svg">';
         }
     }
 
@@ -363,7 +368,9 @@ const runGame = (() => {
     const _playersForm = document.querySelector('.form-two-players');
     const _botForm = document.querySelector('.form-bot');
     const _twoPlayersBtn = document.querySelector('.two-players-button');
+    const _twoPlayersSvg = document.querySelector('.two-players-svg');
     const _playerBotBtn = document.querySelector('.player-bot-button');
+    const _playerBotSvg =document.querySelector('.bot-svg');
     const _playerXName = document.querySelector('#player-x');
     const _playerOName = document.querySelector('#player-o');
     const _playerSingleName = document.querySelector('#single-player');
@@ -391,8 +398,8 @@ const runGame = (() => {
             _botForm.classList.remove('reveal');
             _board.classList.add('bot-board');    
 
-            _selectDifficulty.style.top = '13%';
-            _game.style.marginTop = '5rem';
+            _selectDifficulty.style.top = '17%';
+            _game.style.marginTop = '19rem';
 
             player.setName(_playerSingleName, 'Bot');
     
@@ -430,7 +437,7 @@ const runGame = (() => {
         e.preventDefault();
     }
 
-    function _reset() {
+    function _reset(source) {
         const _markWrap = document.querySelectorAll('.mark-wrap-initial');
 
         gameBoard.restart();
@@ -450,12 +457,23 @@ const runGame = (() => {
             });
         }, 300);
 
-        _restartBtn.textContent = 'Restart';
+        _restartBtn.innerHTML =
+        'Restart <img src="./svg/restart.svg" class="restart-svg">';
 
         if (player.getX()) {
             _announce.textContent = `${player.getX().name}'s turn`;
         }
         else {return;}
+
+        if (source !== 'difficulty') {
+            const _restartSvg = document.querySelector('.restart-svg');
+
+            _restartSvg.classList.add('restart-svg-click');
+    
+            setTimeout(() => {
+                _restartSvg.classList.remove('restart-svg-click');
+            }, 1000);
+        }
     }
 
     function _backToMenu() {
@@ -470,12 +488,11 @@ const runGame = (() => {
         _announce.classList.remove('announce-win-o');
         _playerXScoreContainer.classList.remove('reveal');
         _playerOScoreContainer.classList.remove('reveal');
+        _menu.classList.remove('menu-up');
 
         _startGame.style.display = 'block';
-        _menu.style.top = '50%';
-        _menu.style.transform = 'translateY(-50%)';
-        _game.style.marginTop = '0';
-        _selectDifficulty.style.top = '20%';
+        _game.style.marginTop = '14rem';
+        _selectDifficulty.style.top = '24%';
 
         _playerXName.value = '';
         _playerOName.value = '';
@@ -485,8 +502,10 @@ const runGame = (() => {
 
         _playerXScore.textContent = 0;
         _playerOScore.textContent = 0;
-        _restartBtn.textContent = 'Restart';
         _announce.textContent = `${player.getX().name}'s turn`;
+
+        _restartBtn.innerHTML =
+        'Restart <img src="./svg/restart.svg" class="restart-svg">';
 
         _cells.map(cell => {
             cell.textContent = '';
@@ -496,8 +515,7 @@ const runGame = (() => {
 }
 
     _startGame.addEventListener('click', () => {
-        _menu.style.top = '0';
-        _menu.style.transform = 'none';
+        _menu.classList.add('menu-up');
 
         _startGame.style.display = 'none';
         _twoPlayersBtn.style.display = 'block';
@@ -509,11 +527,23 @@ const runGame = (() => {
         _botForm.classList.remove('reveal');
         _selectDifficulty.classList.remove('reveal');
     });
+    _twoPlayersBtn.addEventListener('mouseover', () => {
+        _twoPlayersSvg.style.filter = 'invert(100%) drop-shadow(0 0 2px #99C24D)';
+    });
+    _twoPlayersBtn.addEventListener('mouseout', () => {
+        _twoPlayersSvg.style.filter = null;
+    });
 
     _playerBotBtn.addEventListener('click', () => {
         _botForm.classList.add('reveal');
         _selectDifficulty.classList.add('reveal');
         _playersForm.classList.remove('reveal');
+    });
+    _playerBotBtn.addEventListener('mouseover', () => {
+        _playerBotSvg.style.filter = 'invert(100%) drop-shadow(0 0 2px #38AECC)';
+    });
+    _playerBotBtn.addEventListener('mouseout', () => {
+        _playerBotSvg.style.filter = null;
     });
 
     _botForm.addEventListener('submit', (e) => {
@@ -529,13 +559,13 @@ const runGame = (() => {
             gameBoard.botLogic.setPercentage(0);
         }
         else if (_difficulty.value === 'medium') {
-            gameBoard.botLogic.setPercentage(60);
+            gameBoard.botLogic.setPercentage(70);
         }
         else if (_difficulty.value === 'impossible') {
             gameBoard.botLogic.setPercentage(100);
         }
 
-        _reset();
+        _reset('difficulty');
         gameBoard.backMenu();
 
         _playerXScore.textContent = 0;
