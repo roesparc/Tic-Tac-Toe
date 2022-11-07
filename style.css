@@ -1,83 +1,388 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+
 :root {
     font-size: 12px;
-    font-family: sans-serif;
+    min-height: 100%;
+    position: relative;
 
     --cell-size: 10rem;
-    --cell-font-size: 7rem;
+    --standard-transition: all 0.3s ease;
+
+    --player-x-color-1: #0000FF;
+    --player-x-color-2: #7FFFD4;
+    --player-o-color-1: #FF0000;
+    --player-o-color-2: #FAEBD7;
+    --two-players-color-1: #6CD4FF;
+    --two-players-color-2: #99C24D;
+    --against-bot-color-1: #FF934F;
+    --against-bot-color-2: #38AECC;
+    --grey: #808080;
+    --white: #FFFFFF;
+    --black: #000000;
 }
 
 * {
     margin: 0;
     padding: 0;
+
+    font-family: 'Nanum Pen Script', sans-serif;
+    font-size: 2.5rem;
 }
 
 body {
-    height: 100vh;
+    margin-bottom: 6rem;
+}
+
+.form-bot, .set-difficulty, .form-two-players,
+.game, .announce, .game-buttons, .player-o-score,
+.player-x-score {
+    opacity: 0;
+    scale: 0;
+    transition: var(--standard-transition);
+}
+
+button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 1rem;
+    background-color: #EFEFEF;
+    text-shadow: 1px 1px var(--white);
+    cursor: pointer;
+    transition: var(--standard-transition);
+}
+
+.menu {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    transition: var(--standard-transition);
+}
+.menu-up {
+    top: 0;
+    transform: translateX(-50%);
 }
 
 h1 {
-    margin-bottom: 3rem;
+    font-size: 12rem;
+    font-weight: normal;
+    color: var(--grey);
+    text-shadow: 1px 1px var(--player-x-color-1), 0 0 10px var(--grey);
+}
+
+.start-game {
+    box-shadow: 1px 1px #FFBF00;
+}
+.start-game:hover {
+    background-color: #FFBF00;
+    color: var(--white);
+    box-shadow: 3px 3px #F87666;
+    text-shadow: 1px 1px #F87666;
+}
+
+.modes {
+    display: flex;
+    gap: 3rem;
 }
 
 .two-players-button {
     display: none;
+
+    box-shadow: 1px 1px var(--two-players-color-1);
+}
+.two-players-button:hover {
+    background-color: var(--two-players-color-1);
+    color: var(--white);
+    box-shadow: 3px 3px var(--two-players-color-2);
+    text-shadow: 1px 1px var(--two-players-color-2);
+}
+.two-players-svg {
+    width: 2rem;
+    transition: var(--standard-transition);
 }
 
 .player-bot-button {
     display: none;
+
+    box-shadow: 1px 1px var(--against-bot-color-1);
+}
+.player-bot-button:hover {
+    background-color: var(--against-bot-color-1);
+    color: var(--white);
+    box-shadow: 3px 3px var(--against-bot-color-2);
+    text-shadow: 1px 1px var(--against-bot-color-2);
+}
+.bot-svg {
+    width: 2.2rem;
+    transition: var(--standard-transition);
 }
 
-.form-bot {
-    display: none;
+input {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    text-align: center;
+}
+
+label {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+::placeholder {
+    text-align: center;
+}
+
+form > button:last-child {
+    margin: 1rem auto 0 auto;
+}
+
+.form-bot, .form-two-players {
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    left: 50%;
+    translate: -50%;
+
+    padding: 3rem;
+    background-color: #EFEFEF;
+    border-radius: 1rem;
 }
 
 .form-two-players {
-    display: none;
+    top: 24%;
+    box-shadow: 3px 3px var(--two-players-color-1);
+}
+
+.form-two-players > label:first-child {
+    text-shadow: 1px 1px var(--two-players-color-1);
+}
+
+.form-two-players > label:nth-child(3) {
+    margin-top: 1rem;
+    text-shadow: 1px 1px var(--two-players-color-2);
+}
+
+.submit-players {
+    background-color: var(--two-players-color-2);
+}
+.submit-players:hover {
+    text-shadow: 1px 1px var(--two-players-color-1);
+    box-shadow: 1px 1px var(--two-players-color-1);
+}
+
+.form-bot {
+    top: 29%;
+    box-shadow: 3px 3px var(--against-bot-color-1);
+}
+
+.form-bot > label {
+    text-shadow: 1px 1px var(--against-bot-color-2);
+}
+
+.submit-bot {
+    background-color: var(--against-bot-color-2);
+}
+.submit-bot:hover {
+    text-shadow: 1px 1px var(--against-bot-color-1);
+    box-shadow: 1px 1px var(--against-bot-color-1);
 }
 
 .set-difficulty {
-    display: none;
+    position: absolute;
+    top: 24%;
+    left: 50%;
+    translate: -50%;
+}
+
+#difficulty {
+    outline: none;
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 3px 3px #800080;
 }
 
 .game {
-    font-size: 1.5rem;
-    display: none;
+    display: flex;
     align-items: center;
-    gap: 10rem;
+    justify-content: center;
+    gap: 12rem;
+    margin-top: 14rem;
+    font-size: 1.5rem;
 }
 
 .announce {
     margin-bottom: 2rem;
     text-align: center;
+    font-size: 3rem;
+    color: var(--grey);
+    text-shadow: 1px 1px var(--black);
+}
+
+.player-x-score {
+    width: 18rem;
+    padding: 1rem;
+    text-align: center;
+    font-size: 6rem;
+    color: var(--player-x-color-1);
+    text-shadow: 3px 3px var(--player-x-color-2), 0 0 10px var(--player-x-color-1);
+    overflow: auto;
+}
+.player-x-score > div {
+    font-size: inherit;
+}
+.player-x-score > div:last-child {
+    font-size: 9rem;
+}
+
+.player-o-score {
+    width: 18rem;
+    padding: 1rem;
+    text-align: center;
+    font-size: 6rem;
+    color: var(--player-o-color-1);
+    text-shadow: 3px 3px var(--player-o-color-2), 0 0 10px var(--player-o-color-1);
+    overflow: auto;
+}
+.player-o-score > div {
+    font-size: inherit;
+}
+.player-o-score > div:last-child {
+    font-size: 9rem;
 }
 
 .board {
     display: grid;
     grid-template-columns: repeat(3, var(--cell-size));
     gap: 4px;
-    background-color: #808080;
+    background-image: linear-gradient(var(--player-x-color-1), var(--player-o-color-1));
     width: max-content;
 }
 
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
-    font-size: var(--cell-font-size);
-    font-weight: bold;
+    font-size: 12rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #ffffff;
+    background-color: var(--white);
     cursor: pointer;
+    color: var(--grey);
+    text-shadow: 1px 1px var(--black);
+
+
+    transition: var(--standard-transition);
 }
 
-.restart-button {
-    display: none;
+.game-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 3rem;
 }
 
 .menu-button {
-    display: none;
+    background-color: #ED6A5A;
+    color: var(--white);
+    text-shadow: 1px 1px var(--black);
+    box-shadow: 1px 1px #38686A;
+}
+.menu-button:hover {
+    box-shadow: 3px 3px #38686A;
+}
+
+.return-svg {
+    width: 1.5rem;
+    filter: invert(100%) drop-shadow(1px 1px var(--black));
+}
+
+.restart-button {
+    background-color: #38686A;
+    color: var(--white);
+    text-shadow: 1px 1px var(--black);
+    box-shadow: 1px 1px #ED6A5A;
+}
+.restart-button:hover {
+    box-shadow: 3px 3px #ED6A5A;
+}
+
+.restart-svg {
+    width: 1.7rem;
+    filter: invert(100%) drop-shadow(1px 1px var(--black));
+}
+
+.restart-svg-click {
+    animation: rotate 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+.reveal {
+    opacity: 100;
+    scale: 1;
+}
+
+.mark-wrap-initial {
+    font-size: 12rem;
+    filter: blur(6px);
+    opacity: 0;
+
+    transition: 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.mark-wrap-after {
+    font-size: 9rem;
+    filter: blur(0);
+    opacity: 1;
+}
+
+.winner-x {
+    color: var(--player-x-color-1);
+    text-shadow: 3px 3px var(--player-x-color-2), 0 0 10px var(--player-x-color-1);
+}
+
+.winner-o {
+    color: var(--player-o-color-1);
+    text-shadow: 3px 3px var(--player-o-color-2), 0 0 10px var(--player-o-color-1);
+}
+
+.announce-win-x {
+    font-size: 4rem;
+    color: var(--player-x-color-1);
+    text-shadow: 3px 3px var(--player-x-color-2), 0 0 10px var(--player-x-color-1);
+}
+
+.announce-win-o {
+    font-size: 4rem;
+    color: var(--player-o-color-1);
+    text-shadow: 3px 3px var(--player-o-color-2), 0 0 10px var(--player-o-color-1);
+}
+
+footer {
+    position: absolute;
+    bottom: 1rem;
+    width: 100%;
+    text-align: center;
+}
+footer a {
+    text-decoration: none;
+    color: var(--grey);
+    text-shadow: 3px 3px var(--player-x-color-2), 0 0 10px var(--player-x-color-1);
+}
+footer a:hover {
+    text-decoration: underline;
 }
