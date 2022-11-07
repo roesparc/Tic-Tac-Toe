@@ -192,7 +192,7 @@ const gameBoard = (() => {
     function _playAgain(announce, restart) {
         if (announce.textContent.slice(-1) === '!') {
             restart.innerHTML =
-            'Play Again <img src="./svg/restart.svg" class="restart-svg">';
+            'Play Again <img src="./img/restart.svg" class="restart-svg">';
         }
     }
 
@@ -458,7 +458,7 @@ const runGame = (() => {
         }, 300);
 
         _restartBtn.innerHTML =
-        'Restart <img src="./svg/restart.svg" class="restart-svg">';
+        'Restart <img src="./img/restart.svg" class="restart-svg">';
 
         if (player.getX()) {
             _announce.textContent = `${player.getX().name}'s turn`;
@@ -505,7 +505,7 @@ const runGame = (() => {
         _announce.textContent = `${player.getX().name}'s turn`;
 
         _restartBtn.innerHTML =
-        'Restart <img src="./svg/restart.svg" class="restart-svg">';
+        'Restart <img src="./img/restart.svg" class="restart-svg">';
 
         _cells.map(cell => {
             cell.textContent = '';
