@@ -6,7 +6,7 @@
 
 ### Vanilla JS Tic Tac Toe project
 
-The core purpose of this project is to make use of factory functions and modules to reduce the JavaScript global code as much as possible and use private scopes instead.
+The core purpose of this project is to make use of factory functions and the module pattern to reduce the JavaScript global code as much as possible.
 
 ### Features
 
